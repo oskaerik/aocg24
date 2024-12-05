@@ -32,3 +32,10 @@ $ python3 -c 'print(((x:="do()"+"".join(__import__("sys").stdin),f:=lambda d:sum
 $ python3 -c 'print((x:=[x.strip()for x in __import__("sys").stdin],sum(x=="XMAS"for x in["".join(x[r+a*i][c+b*i]for i in range(4))for r,_ in enumerate(x)for c,_ in enumerate(x[0])for a,b in [(a,b)for a in(-1,0,1)for b in(-1,0,1)if a or b]if 0<=r+a*3<len(x)and 0<=c+b*3<len(x[0])]),len([x for x in [sum(x)for x in [["".join((x[r-a][c-b],x[r][c],x[r+a][c+b]))=="MAS"for a,b in[(a,b)for a in(-1,1)for b in(-1,1)]if 0<=r-a<len(x)and 0<=r+a<len(x)and 0<=c-b<len(x[0])and 0<=c+b<len(x[0])]for r,_ in enumerate(x)for c,_ in enumerate(x[0])]]if x==2]))[1:])' < example
 (18, 9)
 ```
+
+## 05
+
+```bash
+$ python3 -c 'print(globals().__setitem__("a",lambda k,v:globals().__setitem__(k,v))or a("l",[l.strip()for l in __import__("sys").stdin])or a("r",[r.split("|")for r in l[:l.index("")]])or a("p",[u.split(",")for u in l[l.index("")+1:]])or a("d",lambda g,u:u in V or V.add(u)or([d(g,v)for v in g.get(u,[])]or 1)and O.append(u))or a("t",lambda g:a("V",set())or a("O",[])or ([d(g,n)for n in g]or 1)and O[::-1])or a("G",{k:[v for u,v in r if u==k]for k,_ in r})or a("c",lambda G,O:a("P",{n:i for i,n in enumerate(O)})or all(u not in P or v not in P or P[u]<P[v]for u in G for v in G[u]))or(sum(int(u[len(u)//2])for u in p if c(G,u)),sum(int(t({k:[x for x in v if x in u]for k,v in G.items()if k in u})[len(u)//2])for u in p if not c(G,u))))' < example
+(143, 123)
+```
