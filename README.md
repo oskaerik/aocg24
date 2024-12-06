@@ -39,3 +39,10 @@ $ python3 -c 'print((x:=[x.strip()for x in __import__("sys").stdin],sum(x=="XMAS
 $ python3 -c 'print(globals().__setitem__("a",lambda k,v:globals().__setitem__(k,v))or a("l",[l.strip()for l in __import__("sys").stdin])or a("r",[r.split("|")for r in l[:l.index("")]])or a("p",[u.split(",")for u in l[l.index("")+1:]])or a("d",lambda g,u:u in V or V.add(u)or([d(g,v)for v in g.get(u,[])]or 1)and O.append(u))or a("t",lambda g:a("V",set())or a("O",[])or ([d(g,n)for n in g]or 1)and O[::-1])or a("G",{k:[v for u,v in r if u==k]for k,_ in r})or a("c",lambda G,O:a("P",{n:i for i,n in enumerate(O)})or all(u not in P or v not in P or P[u]<P[v]for u in G for v in G[u]))or(sum(int(u[len(u)//2])for u in p if c(G,u)),sum(int(t({k:[x for x in v if x in u]for k,v in G.items()if k in u})[len(u)//2])for u in p if not c(G,u))))' < example
 (143, 123)
 ```
+
+## 06
+
+```bash
+$ python3 -c 'print((L:=[list(x.strip())for x in open(0).readlines()],I:=next((i,j)for i,r in enumerate(L) for j,v in enumerate(r)if v=="^"),F:=lambda o=0:(l:=[r[:]for r in L],o and(l[o[0]].__setitem__(o[1],"#")),l[I[0]].__setitem__(I[1],"X"),D:=iter(lambda x=[(0,-1),(-1,0),(0,1),(1,0)]:x.append(x.pop(0))or x[0],1),d:=next(D),S:=set(),s:=[I[0],I[1],d[0],d[1]],f:=lambda:((n:=[s[0],s[1],s[2],s[3]],s.clear(),s.extend(n),t:=tuple(s),a:=t in S,S.add(t)if not a else a,b:=l[s[0]+s[2]][s[1]+s[3]]=="#",(d:=next(D),s.__setitem__(2,d[0]),s.__setitem__(3,d[1]))if not a and b else a,(s.__setitem__(0,s[0]+s[2]),s.__setitem__(1,s[1]+s[3]),l[s[0]].__setitem__(s[1],"X"))if not a and not b else a)and a),(R:=[False],list(iter(lambda x=[False]:(x.pop()or x.append((not(0<s[0]<len(l)-1 and 0<s[1]<len(l[0])-1)and(R.pop()or R.append(sum(v=="X"for r in l for v in r))or False))or(bool(R[0])or R.pop()or R.append(f())or bool(R[0])))or x[0]),True))))and(R[0],l),a:=F(),b:=sum(x for x,_ in[F((i,j))for i,r in enumerate(a[1])for j,v in enumerate(r)if v=="X"and(i,j)!=I]if isinstance(x,bool)),a[0],b)[-2:])' < example
+(41, 6)
+```
