@@ -63,3 +63,5 @@ Okay, today was really weird. But I learned that you can construct something lik
 >>> list(iter(lambda l=[0]: l.append((x := l.pop()) + 1) or x, 10))
 [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 ```
+
+And also that you can read from stdin with just `open(0)`.
