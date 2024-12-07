@@ -65,3 +65,14 @@ Okay, today was really weird. But I learned that you can construct something lik
 ```
 
 And also that you can read from stdin with just `open(0)`.
+
+## 07
+
+```bash
+$ python3 -c 'print((I:=[(int(x[0]),[int(x)for x in x[1].split()])for x in[x.split(":")for x in open(0).read().splitlines()]],P:=[[i for i,n in enumerate(N[1:],start=1)]for t,N in I],(f:=lambda N,C,s:[s.append((s.pop()+N[i])if o=="+"else((s.pop()*N[i])if o=="*"else(int(str(s.pop())+str(N[i])))))or s[0]for i,o in C][-1]),C:=lambda O:((list(c)for c in __import__("itertools").product(*[[(x,o)for o in O]for x in p]))for p in P),E:=([(t,N,[(0,"+")]+c)for c in c]for(t,N),c in zip(I,C(["+","*"]))),R:=[any(f(N,C,[0])==t for t,N,C in e)for e in E],a:=sum(t for t,r in zip([t for t,_ in I],R)if r),E:=([(t,N,[(0,"+")]+c)for c in c]for(t,N),c in zip(I,C(["+","*","|"]))),R:=(any(f(N,C,[0])==t for t,N,C in e)for e in E),b:=sum(t for t,r in zip([t for t,_ in I],R)if r),a,b)[-2:])' < example
+(3749, 11387)
+```
+
+Today I tried solving the problem in a tuple directly, instead of trying to solve it the sane way first and then converting it to a single expression. This approach might be easier overall actually, will try it again tomorrow.
+
+Using `any(generator expression)` is nice since it short-circuits when it finds a `True`. Also, list comprehensions allocates a lot of memory, so for large search spaces generator expressions can be more appropriate.
