@@ -76,3 +76,103 @@ $ python3 -c 'print((I:=[(int(x[0]),[int(x)for x in x[1].split()])for x in[x.spl
 Today I tried solving the problem in a tuple directly, instead of trying to solve it the sane way first and then converting it to a single expression. This approach might be easier overall actually, will try it again tomorrow.
 
 Using `any(generator expression)` is nice since it short-circuits when it finds a `True`. Also, list comprehensions allocates a lot of memory, so for large search spaces generator expressions can be more appropriate.
+
+## 08
+
+```bash
+$ python3 -c 'print((print:=lambda*_:None,l:=open(0).read().splitlines(),print("\n".join(l)),F:={f for r in l for f in r if f!="."},print(F),A:={f:[(i,j)for i,r in enumerate(l)for j,v in enumerate(r)if v==f]for f in F},print(A),N:={f:[(p1[0]*2 - p2[0],p1[1]*2 - p2[1])for p1 in A[f]for p2 in A[f]if p1!=p2]for f in A},print(N),n:={(i,j)for n in N.values()for(i,j)in n if 0 <=i < len(l)and 0 <=j < len(l[0])},print(n),print("\n".join("".join(l[i][j]if(i,j)not in n else"#"for j,_ in enumerate(r))for i,r in enumerate(l))),print(O:=len(n)),D:={f:[(p1,(p2[0]- p1[0],p2[1]- p1[1]))for p1,p2 in __import__("itertools").combinations(A[f],2)]for f in A},print(D),d:=[x for d in D.values()for x in d],print(d),g:=lambda s,d:s.append((s[-1][0]+ d[0],s[-1][1]+ d[1]))or(0 <=s[-1][0]< len(l)and 0 <=s[-1][1]< len(l[0])),R:=[(s:=[a])and list(iter(__import__("functools").partial(g,s,b),False))and s for(a,b)in d],R:=(R +[(s:=[a])and list(iter(__import__("functools").partial(g,s,(-b[0],-b[1])),False))and s for(a,b)in d]),n:={(i,j)for r in R for(i,j)in r if 0 <=i < len(l)and 0 <=j < len(l[0])},print(n),print("\n".join("".join(l[i][j]if(i,j)not in n else"#"for j,_ in enumerate(r))for i,r in enumerate(l))),print(T:=len(n)),O,T)[-2:])' < example
+(14, 34)
+```
+
+Today I took an even more structured approach:
+
+```python3
+print((
+# Remove to get debug output
+print := lambda *_: None,
+
+# Read lines from stdin
+l := open(0).read().splitlines(),
+print("\n".join(l)),
+
+# Build a set of all frequencies
+F := {f for r in l for f in r if f != "."},
+print(F),
+
+# Build a dict of antennas {"frequency": [positions]}
+A := {f: [(i,j) for i, r in enumerate(l) for j, v in enumerate(r) if v == f] for f in F},
+print(A),
+
+# For each frequency, go through each pair of antennas and find their antinode
+# Let (p1, p2) create the first difference vector (p1 - p2), meaning the antinode ends up in (p1*2 - p2)
+# Then (p2, p1) creates the other
+# Antinode position is (p1 + (p1 - p2)) and vice versa
+N := {f: [(p1[0]*2 - p2[0], p1[1]*2 - p2[1]) for p1 in A[f] for p2 in A[f] if p1 != p2] for f in A},
+print(N),
+
+# Flatten the antinodes to a set and filter out-of-bounds
+n := {(i, j) for n in N.values() for (i, j) in n if 0 <= i < len(l) and 0 <= j < len(l[0])},
+print(n),
+
+# Print the map, looks good
+print("\n".join("".join(l[i][j] if (i, j) not in n else "#" for j, _ in enumerate(r)) for i, r in enumerate(l))),
+
+# Answer to Part One
+print(O := len(n)),
+
+# All right, time for Part Two
+# Let's grab the code above and make tuples (start, difference vector) instead
+D := {f: [(p1, (p2[0] - p1[0], p2[1] - p1[1])) for p1, p2 in __import__("itertools").combinations(A[f], 2)] for f in A},
+print(D),
+
+# Flatten D to only tuples-of-tuples
+d := [x for d in D.values() for x in d],
+print(d),
+
+# Ok, so now we do a weird while loop I guess
+# Start from start and add difference vector until we go out-of-bounds
+# Then subtract until we go out-of-bounds
+# Using a list of the state makes some sense at least
+
+# Since append returns None we can do "or condition", we then do iter(callable, sentinel=False)
+# to get our while-loop-like behavior, breaking when we are out-of-bounds
+g := lambda s, d: s.append((s[-1][0] + d[0], s[-1][1] + d[1])) or (0 <= s[-1][0] < len(l) and 0 <= s[-1][1] < len(l[0])),
+
+# We can use "and" to control what value we get out from the comprehension, start with adding
+R := [(s := [a]) and list(iter(__import__("functools").partial(g, s, b), False)) and s for (a, b) in d],
+
+# And now we do the subtracting
+R := (R + [(s := [a]) and list(iter(__import__("functools").partial(g, s, (-b[0], -b[1])), False)) and s for (a, b) in d]),
+
+# Make it a set and we should have our antinodes
+n := {(i, j) for r in R for (i, j) in r if 0 <= i < len(l) and 0 <= j < len(l[0])},
+print(n),
+
+# Print the map, looks good!
+print("\n".join("".join(l[i][j] if (i, j) not in n else "#" for j, _ in enumerate(r)) for i, r in enumerate(l))),
+
+# Answer to Part Two
+print(T := len(n)),
+
+# The rules are to print (Part One, Part Two)
+O, T)[-2:])
+```
+
+Then I minified it with:
+
+```python
+import sys
+
+c = "()[],:=!*\""
+
+x = "\n".join(x for x in open(sys.argv[1]).read().splitlines() if not x.startswith("#")).split()
+
+s = ""
+for a, b in zip(x, x[1:]):
+    s += a
+    if a[-1] not in c and b[0] not in c:
+        s += " "
+s += x[-1]
+
+print(s)
+```
