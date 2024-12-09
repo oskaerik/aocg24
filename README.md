@@ -176,3 +176,95 @@ s += x[-1]
 
 print(s)
 ```
+
+## 09
+
+```bash
+$ python3 -c 'print((X:=open(0).read().strip(),I:=__import__("itertools"),F:=[int(x)for x in X[::2]],S:=[int(x)for x in X[1::2]],b:=lambda i,f,s:([i]*f,([]if s is None else["."]*s)),B:=[y for x in(y for x in(b(i,f,s)for i,(f,s)in enumerate(I.zip_longest(F,S)))for y in x)for y in x],l:=[0],r:=[len(B)-1],m:=lambda:l[0]<r[0]and B[l[0]]!="."and l.append(l.pop()+1)and True,M:=lambda:list(iter(m,False))and False or l[0]<r[0],M(),n:=lambda:l[0]<r[0]and B[r[0]]=="."and r.append(r.pop()-1)and True,N:=lambda:list(iter(n,False))and False or l[0]<r[0],N(),f:=lambda:M()and N()and(B.__setitem__(l[0],B[r[0]])or B.__setitem__(r[0],".")or True),list(iter(f,False)),O:=sum(i*l for i,l in enumerate(x for x in B if x!=".")),B:=[y for x in(y for x in(b(i,f,s)for i,(f,s)in enumerate(I.zip_longest(F,S)))for y in x)for y in x],B:=[(t,len(list(x)))for t,x in I.groupby(B)],R:=list(I.accumulate(l for _,l in B)),R:=([0]+R)[:-1],K:=[(i,t,l)for(t,l),i in zip(B,R)],F:=[(i,t,l)for i,t,l in K if t!="."],D:=F[:1],F:=F[1:],S:=[(i,l)for i,t,l in K if t=="."],f:=lambda:(x:=F.pop())and(s:=next(((i,s)for i,s in enumerate(S)if s[1]>=x[2]and s[0]<x[0]),None))and(S.pop(s[0]))and(s[1][1]-x[2])and S.insert(s[0],(s[1][0]+x[2],s[1][1]-x[2]))or D.append((x[0],x[1],x[2])if s is None else(s[1][0],x[1],x[2])),g:=lambda:f()and False or bool(F),list(iter(g,False)),D.sort(),T:=sum(sum(x*t for x in range(i,i+l))for i,t,l in D),O,T)[-2:])' < example
+(1928, 2858)
+```
+
+Ok, I think something clicked yesterday. Think "Haskell", walrus is `let`, then sprinkle some weird list manipulation on top. Unminified:
+
+```python
+print((
+# Read from stdin
+X := open(0).read().strip(),
+print(X),
+
+I := __import__("itertools"),
+
+# Split to files F and free space S
+F := [int(x) for x in X[::2]],
+print(F),
+S := [int(x) for x in X[1::2]],
+print(S),
+
+# Build blocks B
+b := lambda i, f, s: ([i] * f, ([] if s is None else ["."] * s)),
+B := [y for x in (y for x in (b(i, f, s) for i, (f, s) in enumerate(I.zip_longest(F, S))) for y in x) for y in x],
+print("".join(map(str, B))),
+
+# Keep pointers from left and right
+# Loop invariant: l is the first "." and r is the last number
+# Move value from r to l, then update pointers
+l := [0],
+r := [len(B)-1],
+
+# Returns True if we should keep moving l
+m := lambda: l[0] < r[0] and B[l[0]] != "." and l.append(l.pop() + 1) and True,
+M := lambda: list(iter(m, False)) and False or l[0] < r[0],
+M(),
+print("l:", l),
+
+# Returns True if we should keep moving r
+n := lambda: l[0] < r[0] and B[r[0]] == "." and r.append(r.pop() - 1) and True,
+N := lambda: list(iter(n, False)) and False or l[0] < r[0],
+N(),
+print("r:", r),
+
+# Do work until done
+f := lambda: M() and N() and (B.__setitem__(l[0], B[r[0]]) or B.__setitem__(r[0], ".") or True),
+list(iter(f, False)),
+
+# Get answer for Part One
+O := sum(i * l for i, l in enumerate(x for x in B if x != ".")),
+print("Part One:", O),
+
+# Reset B
+B := [y for x in (y for x in (b(i, f, s) for i, (f, s) in enumerate(I.zip_longest(F, S))) for y in x) for y in x],
+print(B),
+
+# Construct list F for "number groups": (index, type, length)
+# Construct list S for spaces: (index, length)
+# D is a list of done number groups: (index, type, length)
+B := [(t, len(list(x))) for t, x in I.groupby(B)],
+print(B),
+R := list(I.accumulate(l for _, l in B)),
+R := ([0] + R)[:-1],
+print(R),
+K := [(i, t, l) for (t, l), i in zip(B, R)],
+F := [(i, t, l) for i, t, l in K if t != "."],
+D := F[:1],
+F := F[1:],
+S := [(i, l) for i, t, l in K if t == "."],
+print(F),
+print(D),
+print(S),
+print(),
+
+# Pop from F, find first space where number fits
+f := lambda: (x := F.pop()) and (s := next(((i, s) for i, s in enumerate(S) if s[1] >= x[2] and s[0] < x[0]), None)) and (S.pop(s[0])) and (s[1][1] - x[2]) and S.insert(s[0], (s[1][0] + x[2], s[1][1] - x[2])) or D.append((x[0], x[1], x[2]) if s is None else (s[1][0], x[1], x[2])),
+
+# Do work
+g := lambda: f() and False or bool(F),
+list(iter(g, False)),
+D.sort(),
+print(D),
+
+# Get answer for Part Two
+T := sum(sum(x*t for x in range(i, i+l)) for i, t, l in D),
+
+# Print (Part One, Part Two)
+O, T)[-2:])
+```
