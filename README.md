@@ -268,3 +268,49 @@ T := sum(sum(x*t for x in range(i, i+l)) for i, t, l in D),
 # Print (Part One, Part Two)
 O, T)[-2:])
 ```
+
+## 10
+
+```bash
+$ python3 -c 'print((M:=[[int(x)for x in m]for m in open(0).read().splitlines()],S:=[(i,j)for i,m in enumerate(M)for j,x in enumerate(m)if x==0],N:=lambda v:[(v[0]+a,v[1]+b)for a,b in[(0,1),(1,0),(0,-1),(-1,0)]if 0<=v[0]+a<len(M)and 0<=v[1]+b<len(M[0])and M[v[0]+a][v[1]+b]==M[v[0]][v[1]]+1],D:=lambda v,V,F:V.add(v)or[(F.append(n)if M[n[0]][n[1]]==9 else None)or D(n,V,F)for n in N(v)if n not in V],R:=[D(s,V:=set(),F:=[])and False or(s,F)for s in S],O:=sum(len(f)for _,f in R),D:=lambda v,V,p,P:V.add(v)or p.append(v)or(P.append(list(p))if M[v[0]][v[1]]==9 else None)or[D(n,V,p,P)for n in N(v)if n not in V]and False or V.remove(v)or p.pop(),R:=[D(s,V:=set(),[],P:=[])and False or(s,P)for s in S],T:=sum(len(f)for _,f in R),O,T)[-2:])' < example
+(36, 81)
+```
+
+Unminified:
+
+```python
+print((
+# Read map from stdin
+M := [[int(x) for x in m] for m in open(0).read().splitlines()],
+print(f"{M=}"),
+
+# Find all start coordinates 0
+S := [(i,j) for i,m in enumerate(M) for j,x in enumerate(m) if x==0],
+print(f"{S=}"),
+
+# Generate v's edges
+N := lambda v: [(v[0]+a,v[1]+b) for a,b in [(0,1), (1,0), (0,-1), (-1,0)] if 0<=v[0]+a<len(M) and 0<=v[1]+b<len(M[0]) and M[v[0]+a][v[1]+b] == M[v[0]][v[1]]+1],
+print(f"{N(S[0])=}"),
+
+# DFS current vertex, visited, finish 9's
+D := lambda v, V, F: V.add(v) or [(F.append(n) if M[n[0]][n[1]]==9 else None) or D(n, V, F) for n in N(v) if n not in V],
+
+# Do work
+R := [D(s, V:=set(), F:=[]) and False or (s, F) for s in S],
+print(f"{R=}"),
+
+# Part One
+O := sum(len(f) for _,f in R),
+
+# Let's keep track of paths instead and let P be all paths
+D := lambda v, V, p, P: V.add(v) or p.append(v) or (P.append(list(p)) if M[v[0]][v[1]]==9 else None) or [D(n, V, p, P) for n in N(v) if n not in V] and False or V.remove(v) or p.pop(),
+
+# Do work
+R := [D(s, V:=set(), [], P:=[]) and False or (s, P) for s in S],
+print(f"{R=}"),
+
+# Part Two
+T := sum(len(f) for _,f in R),
+
+O, T)[-2:])
+```
