@@ -314,3 +314,49 @@ T := sum(len(f) for _,f in R),
 
 O, T)[-2:])
 ```
+
+## 11
+
+```bash
+$ python3 -c 'print((X:=[int(x)for x in open(0).read().split()],X:={k:len([x for x in X if x==k])for k in set(X)},I:=lambda N,i,n:N.__setitem__(i,N[i]+n),f:=lambda P:((N:=__import__("collections").defaultdict(int))or[(s:=str(x))and(n:=P[x])and False or(I(N,1,n)if x==0 else I(N,int(s[:len(s)//2]),n)or I(N,int(s[len(s)//2:]),n)if len(s)% 2==0 else I(N,x*2024,n))for x in P])and False or N,P:=X,[(P:=f(P))for _ in range(25)],O:=sum(P.values()),P:=X,[(P:=f(P))for _ in range(75)],T:=sum(P.values()),O,T)[-2:])' < example
+(55312, 65601038650482)
+```
+
+Unminified:
+
+```python
+print((
+# Read from stdin and build dict {number: count}
+X := [int(x) for x in open(0).read().split()],
+X := {k: len([x for x in X if x == k]) for k in set(X)},
+print(X),
+
+# Helper function to do: N[i] += n
+I := lambda N, i, n: N.__setitem__(i, N[i]+n),
+
+# Actual logic
+f := lambda P: (
+# Create new dict N
+(N := __import__("collections").defaultdict(int))
+or [(s := str(x)) and (n := P[x]) and False
+# 0 turns into 1
+or (I(N,1,n) if x == 0
+# Split if even number of digits
+else I(N,int(s[:len(s)//2]),n) or I(N,int(s[len(s)//2:]),n) if len(s) % 2 == 0
+# Otherwise multiply by 2024
+else I(N,x*2024,n)) for x in P])
+# Return N
+and False or N,
+
+# Part One
+P := X,
+[(P := f(P)) for _ in range(25)],
+O := sum(P.values()),
+
+# Part Two
+P := X,
+[(P := f(P)) for _ in range(75)],
+T := sum(P.values()),
+
+O, T)[-2:])
+```
