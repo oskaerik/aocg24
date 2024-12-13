@@ -474,7 +474,7 @@ O, T)[-2:])
 ## 13
 
 ```bash
-$ python3 -c 'print((X:=[x for x in open(0).read().splitlines()if x],X:=[[tuple(map(int,__import__("re").findall(r'\d+',x)))for x in X[i*3:i*3+3]]for i in range(len(X)//3)],F:=__import__("fractions").Fraction,M:=[F(p[1]-F(p[0]*b[1],b[0]),a[1]-F(a[0]*b[1],b[0]))for a,b,p in X],N:=[F(p[0]-m*a[0],b[0])for(a,b,p),m in zip(X,M)],Z:=[(int(m),int(n))for m,n in zip(M,N)if m.is_integer()and n.is_integer()and 0<=int(m)<=100 and 0<=int(n)<=100],T:=[m*3+n for m,n in Z],O:=sum(T),d:=10000000000000,X:=[(a,b,(p[0]+d,p[1]+d))for a,b,p in X],M:=[F(p[1]-F(p[0]*b[1],b[0]),a[1]-F(a[0]*b[1],b[0]))for a,b,p in X],N:=[F(p[0]-m*a[0],b[0])for(a,b,p),m in zip(X,M)],Z:=[(int(m),int(n))for m,n in zip(M,N)if m.is_integer()and n.is_integer()and 0<=int(m)and 0<=int(n)],T:=[m*3+n for m,n in Z],T:=sum(T),O,T)[-2:])' < example
+$ python3 -c 'print((X:=[x for x in open(0).read().splitlines()if x],X:=[[tuple(map(int,__import__("re").findall(r"\d+",x)))for x in X[i*3:i*3+3]]for i in range(len(X)//3)],F:=__import__("fractions").Fraction,M:=[F(p[1]-F(p[0]*b[1],b[0]),a[1]-F(a[0]*b[1],b[0]))for a,b,p in X],N:=[F(p[0]-m*a[0],b[0])for(a,b,p),m in zip(X,M)],Z:=[(int(m),int(n))for m,n in zip(M,N)if m.is_integer()and n.is_integer()and 0<=int(m)<=100 and 0<=int(n)<=100],T:=[m*3+n for m,n in Z],O:=sum(T),d:=10000000000000,X:=[(a,b,(p[0]+d,p[1]+d))for a,b,p in X],M:=[F(p[1]-F(p[0]*b[1],b[0]),a[1]-F(a[0]*b[1],b[0]))for a,b,p in X],N:=[F(p[0]-m*a[0],b[0])for(a,b,p),m in zip(X,M)],Z:=[(int(m),int(n))for m,n in zip(M,N)if m.is_integer()and n.is_integer()and 0<=int(m)and 0<=int(n)],T:=[m*3+n for m,n in Z],T:=sum(T),O,T)[-2:])' < example
 (480, 875318608908)
 ```
 
@@ -484,7 +484,7 @@ $ python3 -c 'print((X:=[x for x in open(0).read().splitlines()if x],X:=[[tuple(
 print((
 # Parse each claw machine
 X:=[x for x in open(0).read().splitlines() if x],
-X:=[[tuple(map(int, __import__("re").findall(r'\d+', x))) for x in X[i*3:i*3+3]] for i in range(len(X)//3)],
+X:=[[tuple(map(int, __import__("re").findall(r"\d+", x))) for x in X[i*3:i*3+3]] for i in range(len(X)//3)],
 print(f"{X=}"),
 
 # X is [[(ax, ay), (bx, by), (px, py)], ...]
