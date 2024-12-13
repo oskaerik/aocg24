@@ -360,3 +360,113 @@ T := sum(P.values()),
 
 O, T)[-2:])
 ```
+
+## 12
+
+```bash
+$ python3 -c 'print((M:=[list(x)for x in open(0).read().splitlines()],e:=enumerate,L:=__import__("collections").defaultdict(list),[L[l].append((i,j))for i,m in e(M)for j,l in e(m)],F:=__import__("functools"),D:=[(0,1),(-1,0),(0,-1),(1,0)],b:=lambda M,Q,V:(v:=Q.pop(),V.add(v),Q.extend([(i,j)for i,j in((v[0]+a,v[1]+b)for a,b in D)if(i,j)not in V and 0<=i<len(M)and 0<=j<len(M[0])and M[i][j]==M[v[0]][v[1]]]),bool(Q))[-1],B:=lambda M,s:(Q:=[s],V:=set(),list(iter(F.partial(b,M,Q,V),False)),V)[-1],c:=lambda U,C:(s:=U.pop(),V:=B(M,s),C.append(V),U.difference_update(V),bool(U))[-1],R:=[(U:=set(X),C:=[],list(iter(F.partial(c,U,C),False)),C)[-1]for X in L.values()],R:=[C for r in R for C in r],P:=[sum(M[i][j]!=M[i+a][j+b]if 0<=i+a<len(M)and 0<=j+b<len(M[0])else 1 for i,j in C for a,b in D)for C in R],O:=sum(len(C)*p for C,p in zip(R,P)),D:=[(-.5,.5),(.5,.5),(.5,-.5),(-.5,-.5)],X:=[{(i,j):[(i+a,j+b)for a,b in D]for i,j in C} for C in R],Y:=[[(v,k)for k,V in x.items()for v in V]for x in X],Z:=[{k:[v for l,v in y if k==l]for k,v in y} for y in Y],C:=[{k:v for k,v in z.items()if len(v)%2==1} for z in Z],C:=[len(c)for c in C],D:=[{k:v for k,v in z.items()if len(v)==2 and abs(v[0][0]-v[1][0])==abs(v[0][1]-v[1][1])==1} for z in Z],D:=[sum(map(len,d.values()))for d in D],S:=[c+d for c,d in zip(C,D)],T:=sum(len(C)*s for C,s in zip(R,S)),O,T)[-2:])' < example
+(1930, 1206)
+```
+
+Part Two was painful. Unminified:
+
+```python
+print((
+# Read map from stdin
+M:=[list(x) for x in open(0).read().splitlines()],
+print(f"{M=}"),
+
+# Dict {letter: [(i,j)]}
+e:=enumerate,
+L:=__import__("collections").defaultdict(list),
+[L[l].append((i,j)) for i,m in e(M) for j,l in e(m)],
+
+# BFS
+F:=__import__("functools"),
+D:=[(0,1),(-1,0),(0,-1),(1,0)],
+# Inner loop
+b:=lambda M, Q, V: (
+# Get next vertex
+v:=Q.pop(),
+# Mark v as visited
+V.add(v),
+# Add all neighbors to queue
+Q.extend([(i,j) for i,j in ((v[0]+a,v[1]+b) for a,b in D) if (i,j) not in V and 0<=i<len(M) and 0<=j<len(M[0]) and M[i][j]==M[v[0]][v[1]]]),
+bool(Q))[-1],
+# Outer loop
+B:=lambda M, s: (
+Q:=[s],
+V:=set(),
+# While Q is not empty
+list(iter(F.partial(b,M,Q,V), False)),
+V)[-1],
+
+# Collect cliques
+# For letter:
+# While U:
+# pop s, get clique V = BFS(s), U -= V
+c:=lambda U, C: (
+s:=U.pop(),
+V:=B(M, s),
+C.append(V),
+U.difference_update(V),
+bool(U))[-1],
+R:=[(U:=set(X), C:=[], list(iter(F.partial(c,U,C),False)), C)[-1] for X in L.values()],
+# Flatten to list of cliques
+R:=[C for r in R for C in r],
+print(f"{R=}"),
+
+# An edge contributes to the perimiter if it connects to another letter or the outer border
+P:=[sum(M[i][j]!=M[i+a][j+b] if 0<=i+a<len(M) and 0<=j+b<len(M[0]) else 1 for i,j in C for a,b in D) for C in R],
+print(f"{P=}"),
+
+# Part One = area * perimeter
+O:=sum(len(C)*p for C,p in zip(R,P)),
+
+# All right, Part Two should be something like counting clique shape corners instead
+# For each clique/shape:
+# Each cell has 4 candidate corners
+# If it's not shared by any other cells, it's a regular "outwards corner"
+# If 3 cells share a corner, it's an "inwards corner"
+
+# There's also the weird case between the two B shapes:
+# AAAAAA
+# AAABBA
+# AAABBA
+# ABBAAA
+# ABBAAA
+# AAAAAA
+
+# Specifically:
+# AB
+# BA
+
+# So if exactly 2 cells have a corner in common, and the cells are diagonally adjacent,
+# they form a corner in each direction as well
+D := [(-.5,.5),(.5,.5),(.5,-.5),(-.5,-.5)],
+X:=[{(i,j): [(i+a,j+b) for a,b in D] for i,j in C} for C in R],
+print(f"{X=}"),
+Y:=[[(v,k) for k,V in x.items() for v in V] for x in X],
+print(f"{Y=}"),
+Z:=[{k:[v for l,v in y if k==l] for k,v in y} for y in Y],
+print(f"{Z=}"),
+
+# Outwards/inwards corners
+C:=[{k:v for k,v in z.items() if len(v)%2==1} for z in Z],
+print(f"{C=}"),
+C:=[len(c) for c in C],
+
+# Weird diagonals
+D:=[{k:v for k,v in z.items() if len(v)==2 and abs(v[0][0]-v[1][0])==abs(v[0][1]-v[1][1])==1} for z in Z],
+print(f"{D=}"),
+D:=[sum(map(len,d.values())) for d in D],
+
+# Sum all corners
+S:=[c+d for c,d in zip(C,D)],
+print(S),
+
+# Part Two = area * corners
+T:=sum(len(C)*s for C,s in zip(R,S)),
+
+O, T)[-2:])
+```
