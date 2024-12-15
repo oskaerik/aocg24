@@ -605,3 +605,80 @@ R:=N(R),
 
 O, T)[-2:])
 ```
+
+## 15
+
+```bash
+python -c 'print((X:=open(0).read().splitlines(),i:=X.index(""),M:=[list(m)for m in X[:i]],I:="".join(X[i:]),p:=lambda M:[[print(x,end="")for x in m]and print()for m in M],p:=lambda M:None,p(M),D:={"^":(-1,0),">":(0,1),"v":(1,0),"<":(0,-1)},init:=lambda M:next((i,j)for i,m in enumerate(M)for j,x in enumerate(m)if x=="@"),M_:=[list(m)for m in M],move:=lambda ci,cj,di,dj:(i:=ci+di,j:=cj+dj,x:=M[i][j],ret:=x!="#",ret:=(ret & move(i,j,di,dj)&(move(i,j+1,di,dj)if x=="["and di!=0 else True)&(move(i,j-1,di,dj)if x=="]"and di!=0 else True))if x in"O[]"else ret,M[i].__setitem__(j,M[ci][cj]),M[ci].__setitem__(cj,"."),ret)[-1],r:=init(M),[(d:=D[ins],B:=[list(m)for m in M],did:=move(*r,*d),did and(r:=(r[0]+d[0],r[1]+d[1]))or(M:=B),)for ins in I],O:=sum(i*100+j for i,m in enumerate(M)for j,x in enumerate(m)if x=="O"),M:=[],[M.append([])or[(M[i].append(x),M[i].append("."))if x=="@"else(M[i].append("["),M[i].append("]"))if x=="O"else(M[i].append(x),M[i].append(x))for j,x in enumerate(m)]for i,m in enumerate(M_)],p(M),r:=init(M),[(d:=D[ins],B:=[list(m)for m in M],did:=move(*r,*d),did and(r:=(r[0]+d[0],r[1]+d[1]))or(M:=B),)for ins in I],T:=sum(i*100+j for i,m in enumerate(M)for j,x in enumerate(m)if x=="["),O,T)[-2:])' < example
+(10092, 9021)
+```
+
+Today I did it imperative first and then converted. Made me realize how much I appreciate the functional element the last few days, and converting a solution is pretty bording. Ugly and unminified:
+
+```python
+print((
+# Read input from stdin
+X := open(0).read().splitlines(),
+print(X),
+
+# Split map and instructions
+i := X.index(""),
+M := [list(m) for m in X[:i]],
+I := "".join(X[i:]),
+print(I),
+
+p := lambda M: [[print(x,end="") for x in m] and print() for m in M],
+
+# Remove for debugging
+p := lambda M: None,
+
+p(M),
+
+D := {"^": (-1,0), ">": (0,1), "v": (1,0), "<": (0,-1)},
+
+# Find robot
+init := lambda M: next((i,j) for i,m in enumerate(M) for j,x in enumerate(m) if x == "@"),
+
+# Backup
+M_ := [list(m) for m in M],
+
+# Step (recursive)
+move := lambda ci,cj,di,dj: (
+i:=ci+di, j:=cj+dj, x:=M[i][j],
+# Return False if wall
+ret:=x != "#",
+# Try moving the box
+ret:=(ret & move(i,j,di,dj) & (move(i,j+1,di,dj) if x=="[" and di!=0 else True) & (move(i,j-1,di,dj) if x=="]" and di!=0 else True)) if x in "O[]" else ret,
+M[i].__setitem__(j, M[ci][cj]),
+M[ci].__setitem__(cj, "."),
+ret)[-1],
+
+# Part One
+r := init(M),
+[(
+d:=D[ins],
+B:=[list(m) for m in M],
+did:=move(*r,*d),
+# Move robot or reset on failure
+did and (r:=(r[0]+d[0],r[1]+d[1])) or (M:=B),
+) for ins in I],
+
+O := sum(i*100+j for i,m in enumerate(M) for j,x in enumerate(m) if x == "O"),
+
+M:=[],
+[M.append([]) or [(M[i].append(x),M[i].append(".")) if x=="@" else (M[i].append("["),M[i].append("]")) if x=="O" else (M[i].append(x),M[i].append(x)) for j,x in enumerate(m)] for i,m in enumerate(M_)],
+p(M),
+
+# Part Two
+r := init(M),
+[(
+d:=D[ins],
+B:=[list(m) for m in M],
+did:=move(*r,*d),
+# Move robot or reset on failure
+did and (r:=(r[0]+d[0],r[1]+d[1])) or (M:=B),
+) for ins in I],
+
+T := sum(i*100+j for i,m in enumerate(M) for j,x in enumerate(m) if x == "["),
+O, T)[-2:])
+```
