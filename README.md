@@ -613,7 +613,7 @@ $ python -c 'print((X:=open(0).read().splitlines(),i:=X.index(""),M:=[list(m)for
 (10092, 9021)
 ```
 
-Today I did it imperative first and then converted. Made me realize how much I appreciate the functional element the last few days, and converting a solution is pretty bording. Ugly and unminified:
+Today I did it imperative first and then converted. Made me realize how much I appreciate the functional elements the last few days, and converting a solution is pretty boring. Ugly and unminified:
 
 ```python
 print((
