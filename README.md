@@ -682,3 +682,76 @@ did and (r:=(r[0]+d[0],r[1]+d[1])) or (M:=B),
 T := sum(i*100+j for i,m in enumerate(M) for j,x in enumerate(m) if x == "["),
 O, T)[-2:])
 ```
+
+## 16
+
+```bash
+$ python3 -c 'print((M:=[list(x)for x in open(0).read().splitlines()],s:=next((i,j)for i,m in enumerate(M)for j,x in enumerate(m)if x=="S"),e:=next((i,j)for i,m in enumerate(M)for j,x in enumerate(m)if x=="E"),dd:=__import__("collections").defaultdict,pre:=dd(list),hq:=__import__("heapq"),neighbors:=lambda M,v:[n for n in[None if M[v[0]+v[2]][v[1]+v[3]]=="#"else((v[0]+v[2],v[1]+v[3],v[2],v[3]),1),((v[0],v[1],abs(v[3]),abs(v[2])),1000),((v[0],v[1],-abs(v[3]),-abs(v[2])),1000),]if n is not None],inner:=lambda M,ds,pq:(c:=hq.heappop(pq),[ds.__setitem__(n,d:=c[0]+w)or hq.heappush(pq,(d,n))or pre.__setitem__(n,[c[1]])if c[0]+w<ds[n]else pre[n].append(c[1])if c[0]+w==ds[n]else None for n,w in neighbors(M,c[1])]if c[0]<=ds[c[1]]else None,bool(pq))[-1],dijkstra:=lambda M,s:(ds:=dd(lambda:float("inf")),ds.__setitem__(s,0),pq:=[],hq.heappush(pq,(0,s)),list(iter(lambda:inner(M,ds,pq),False)),ds)[-1],ds:=dijkstra(M,(s[0],s[1],0,1)),O:=min([d for(i,j,_,_),d in ds.items()if(i,j)==e]),best:=[v for v,d in ds.items()if v[0]==e[0]and v[1]==e[1]if d==O],nodes:=set(),dfs:=lambda v:(nodes.add(v),[dfs(p)for p in pre[v]],),[dfs(b)for b in best],nodes:={(i,j)for i,j,_,_ in nodes},T:=len(nodes),O,T)[-2:])' < example
+(7036, 45)
+```
+
+Unminified:
+
+```python
+print((
+# Read map from stdin
+M := [list(x) for x in open(0).read().splitlines()],
+print(f"{M=}"),
+
+# Start/end
+s := next((i,j) for i,m in enumerate(M) for j,x in enumerate(m) if x=="S"),
+e := next((i,j) for i,m in enumerate(M) for j,x in enumerate(m) if x=="E"),
+
+# Predecessors (for Part Two)
+dd := __import__("collections").defaultdict,
+pre := dd(list),
+
+# Dijkstra's
+hq := __import__("heapq"),
+
+neighbors := lambda M, v: [n for n in [
+# Forward
+None if M[v[0]+v[2]][v[1]+v[3]]=="#" else ((v[0]+v[2],v[1]+v[3],v[2],v[3]), 1),
+# Turns
+((v[0],v[1],abs(v[3]),abs(v[2])), 1000),
+((v[0],v[1],-abs(v[3]),-abs(v[2])), 1000),
+] if n is not None],
+
+inner := lambda M, ds, pq: (
+c := hq.heappop(pq),
+[ds.__setitem__(n,d:=c[0]+w) or hq.heappush(pq, (d,n)) or pre.__setitem__(n,[c[1]]) if c[0]+w < ds[n] else pre[n].append(c[1]) if c[0]+w == ds[n] else None for n,w in neighbors(M,c[1])] if c[0] <= ds[c[1]] else None,
+bool(pq))[-1],
+
+dijkstra := lambda M, s: (
+
+# Distances
+ds := dd(lambda: float("inf")),
+ds.__setitem__(s,0),
+
+# Priority queue
+pq := [],
+hq.heappush(pq, (0,s)),
+
+list(iter(lambda: inner(M, ds, pq), False)),
+
+ds)[-1],
+ds := dijkstra(M, (s[0],s[1],0,1)),
+print(f"{ds=}"),
+print(f"{pre=}"),
+
+# Part One
+O := min([d for (i,j,_,_),d in ds.items() if (i,j)==e]),
+
+# Part Two, DFS through predecessors
+best := [v for v,d in ds.items() if v[0]==e[0] and v[1]==e[1] if d == O],
+nodes := set(),
+dfs := lambda v: (
+nodes.add(v),
+[dfs(p) for p in pre[v]],
+),
+[dfs(b) for b in best],
+nodes := {(i,j) for i,j,_,_ in nodes},
+T := len(nodes),
+
+O, T)[-2:])
+```
