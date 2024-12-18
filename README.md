@@ -837,3 +837,57 @@ T := rec([g(0,1)],1),
 
 O, T)[-2:])
 ```
+
+## 18
+
+```bash
+$ python3 -c 'print((X:=[tuple(map(int,x.split(",")))for x in open(0).read().splitlines()],mx:=max(x for x,_ in X),my:=max(y for _,y in X),n_bytes:=12 if(mx,my)==(6,6)else 1024,C:=set(X[:n_bytes]),neighbors:=lambda v:[(x,y)for x,y in[(v[0]+d[0],v[1]+d[1])for d in[(0,1),(1,0),(0,-1),(-1,0)]]if 0<=x<=mx and 0<=y<=my and(x,y)not in C],res:=[],bfs:=lambda s,e:(Q:=__import__("collections").deque([(s,0)]),V:={s},list(iter(lambda:(curr:=Q.popleft(),v:=curr[0],dist:=curr[1],res.append(curr)if v==e else[V.add(n)or Q.append((n,dist+1))for n in neighbors(v)if n not in V],bool(Q)and not bool(res))[-1],False))),bfs((0,0),(mx,my)),O:=res[0][1],g:=((res:=[],C:=set(X[:i+1]),bfs((0,0),(mx,my)),None if res else X[i])[-1]for i in range(len(X))),T:=",".join(map(str,next(x for x in g if x is not None))),O,T)[-2:])' < example
+(22, '6,1')
+```
+
+Looks like we're doing a graph search again! Unminified:
+
+```python
+print((
+X := [tuple(map(int,x.split(","))) for x in open(0).read().splitlines()],
+print(X),
+mx := max(x for x,_ in X),
+my := max(y for _,y in X),
+print(mx, my),
+
+n_bytes := 12 if (mx,my)==(6,6) else 1024,
+C := set(X[:n_bytes]),
+print(C),
+
+# BFS to find shortest path
+neighbors := lambda v: [(x,y) for x,y in [(v[0]+d[0],v[1]+d[1]) for d in [(0,1),(1,0),(0,-1),(-1,0)]] if 0<=x<=mx and 0<=y<=my and (x,y) not in C],
+
+res := [],
+bfs := lambda s, e: (
+# [(v, distance to v)]
+Q := __import__("collections").deque([(s,0)]),
+V := {s},
+list(iter(lambda: (
+curr := Q.popleft(),
+v := curr[0],
+dist := curr[1],
+res.append(curr) if v == e else [V.add(n) or Q.append((n,dist+1)) for n in neighbors(v) if n not in V],
+bool(Q) and not bool(res))[-1], False))
+),
+bfs((0,0),(mx,my)),
+print(res),
+
+# Part One
+O := res[0][1],
+
+# Part Two
+g := ((
+print(i),
+res:=[],
+C:=set(X[:i+1]),
+bfs((0,0),(mx,my)),
+None if res else X[i])[-1] for i in range(len(X))),
+T := ",".join(map(str,next(x for x in g if x is not None))),
+
+O, T)[-2:])
+```
