@@ -755,3 +755,85 @@ T := len(nodes),
 
 O, T)[-2:])
 ```
+
+## 17
+
+```bash
+$ python3 -c 'print((X:=open(0).read().splitlines(),A:=[int(X[0].split(":")[-1])],B:=[int(X[1].split(":")[-1])],C:=[int(X[2].split(":")[-1])],P:=[int(x)for x in X[-1].split(":")[-1].split(",")],ptr:=[0],com:=lambda op:(op if 0<=op<=3 else A[0]if op==4 else B[0]if op==5 else C[0]if op==6 else exit(2)),do:=lambda ins,op,out:((A.__setitem__(0,A[0]//2**com(op)),ptr.__setitem__(0,ptr[0]+2))if ins==0 else(B.__setitem__(0,B[0]^op),ptr.__setitem__(0,ptr[0]+2))if ins==1 else(B.__setitem__(0,com(op)%8),ptr.__setitem__(0,ptr[0]+2))if ins==2 else ptr.__setitem__(0,ptr[0]+2 if A[0]==0 else op)if ins==3 else(B.__setitem__(0,B[0]^C[0]),ptr.__setitem__(0,ptr[0]+2))if ins==4 else(out.append(com(op)%8),ptr.__setitem__(0,ptr[0]+2))if ins==5 else(B.__setitem__(0,A[0]//2**com(op)),ptr.__setitem__(0,ptr[0]+2))if ins==6 else(C.__setitem__(0,A[0]//2**com(op)),ptr.__setitem__(0,ptr[0]+2))if ins==7 else exit(3),),f:=lambda a,b,c:(A.__setitem__(0,a),B.__setitem__(0,b),C.__setitem__(0,c),ptr.__setitem__(0,0),out:=[],list(iter(lambda:(do(P[ptr[0]],P[ptr[0]+1],out),ptr[0]<len(P))[-1],False)),out)[-1],O:=",".join(map(str,f(A[0],B[0],C[0]))),g:=lambda prev,i:(a for a,out in(((prev<<3)+x,f((prev<<3)+x,0,0))for x in range(8))if out==P[-i:]),rec:=lambda gs,i:(xs:=(x for g in gs for x in g),rec([g(x,i+1)for x in xs],i+1)if i<len(P)else next(xs),)[-1],T:=rec([g(0,1)],1),O,T)[-2:])' < example
+('5,7,3,0', 117440)
+```
+
+Part Two was really hard, but so satisfying. Unminified:
+
+```python
+print((
+# Read and parse input
+X := open(0).read().splitlines(),
+print(X),
+A := [int(X[0].split(": ")[-1])],
+B := [int(X[1].split(": ")[-1])],
+C := [int(X[2].split(": ")[-1])],
+P := [int(x) for x in X[-1].split(": ")[-1].split(",")],
+print(A, B, C, P),
+
+ptr := [0],
+
+# Combo operator
+com := lambda op: (
+op if 0 <= op <= 3 else
+A[0] if op == 4 else
+B[0] if op == 5 else
+C[0] if op == 6 else
+exit(2)
+),
+
+# Do work
+do := lambda ins, op, out: (
+# adv
+(A.__setitem__(0,A[0]//2**com(op)), ptr.__setitem__(0,ptr[0]+2)) if ins==0 else
+# bxl
+(B.__setitem__(0,B[0]^op), ptr.__setitem__(0,ptr[0]+2)) if ins==1 else
+# bst
+(B.__setitem__(0,com(op)%8), ptr.__setitem__(0,ptr[0]+2)) if ins==2 else
+# jnz
+ptr.__setitem__(0,ptr[0]+2 if A[0]==0 else op) if ins==3 else
+# bxc
+(B.__setitem__(0,B[0]^C[0]), ptr.__setitem__(0,ptr[0]+2)) if ins==4 else
+# out
+(out.append(com(op)%8), ptr.__setitem__(0,ptr[0]+2)) if ins==5 else
+# bdv
+(B.__setitem__(0,A[0]//2**com(op)), ptr.__setitem__(0,ptr[0]+2)) if ins==6 else
+# cdv
+(C.__setitem__(0,A[0]//2**com(op)), ptr.__setitem__(0,ptr[0]+2)) if ins==7 else
+exit(3),
+),
+
+# Collect output
+f := lambda a, b, c: (
+A.__setitem__(0, a),
+B.__setitem__(0, b),
+C.__setitem__(0, c),
+ptr.__setitem__(0, 0),
+out := [],
+list(iter(lambda: (do(P[ptr[0]], P[ptr[0]+1], out), ptr[0] < len(P))[-1], False)),
+out)[-1],
+
+# Part One
+O := ",".join(map(str, f(A[0], B[0], C[0]))),
+print("Part One:", O),
+
+# Ok, Part Two was hard...
+# We know that the 3 most significant bits should output the last instruction,
+# the next 3 should output the next instruction, and so on
+# So for each instruction, recursively pick the smallest A that outputs all instructions before and including that instruction
+
+g := lambda prev, i: (a for a,out in (((prev<<3)+x,f((prev<<3)+x,0,0)) for x in range(8)) if out==P[-i:]),
+
+rec := lambda gs,i: (
+xs := (x for g in gs for x in g),
+rec([g(x,i+1) for x in xs], i+1) if i<len(P) else next(xs),
+)[-1],
+T := rec([g(0,1)],1),
+
+O, T)[-2:])
+```
