@@ -891,3 +891,33 @@ T := ",".join(map(str,next(x for x in g if x is not None))),
 
 O, T)[-2:])
 ```
+
+## 19
+
+```bash
+$ python3 -c 'print((X:=open(0).read().splitlines(),P:=X[0].split(", "),D:=X[2:],f:=lambda d:(S:=[1]+[0]*len(d),[S.__setitem__(i,S[i]+S[i-len(p)])for i in range(1,len(d)+1)for p in P if len(p)<=i and d[i-len(p):i]==p],S[-1])[-1],R:=[f(d)for d in D],sum(map(bool,R)),sum(R))[-2:])' < example
+(6, 16)
+```
+
+Today was really fun! Unminified:
+
+```python
+print((
+X := open(0).read().splitlines(),
+P := X[0].split(", "),
+D := X[2:],
+
+# Dynamic programming: S[i] = number of ways to build substring d[:i]
+f := lambda d: (
+S := [1] + [0]*len(d),
+[S.__setitem__(i, S[i]+S[i-len(p)])
+for i in range(1,len(d)+1)
+for p in P
+if len(p)<=i and d[i-len(p):i]==p],
+S[-1])[-1],
+
+R := [f(d) for d in D],
+
+sum(map(bool,R)),
+sum(R))[-2:])
+```
