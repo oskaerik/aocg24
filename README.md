@@ -921,3 +921,80 @@ R := [f(d) for d in D],
 sum(map(bool,R)),
 sum(R))[-2:])
 ```
+
+## 20
+
+```bash
+$ python3 -c 'print((M:=open(0).read().splitlines(),example:=len(M)<100,S:=next((i,j)for i,m in enumerate(M)for j,x in enumerate(m)if x=="S"),E:=next((i,j)for i,m in enumerate(M)for j,x in enumerate(m)if x=="E"),ns:=lambda v:[(v[0]+d[0],v[1]+d[1])for d in[(-1,0),(0,1),(1,0),(0,-1)]if 0<=v[0]+d[0]<len(M)and 0<=v[1]+d[1]<len(M[0])],Q:=__import__("collections").deque([(S,0)]),FS:={S:0},[([(FS.__setitem__(n,v[1]+1),Q.append((n,v[1]+1))if n!=E else None,)for n in ns(v[0])if M[n[0]][n[1]]!="#"and n not in FS])for v in iter(lambda:Q.popleft()if Q else None,None)],Q:=__import__("collections").deque([(E,0)]),FE:={E:0},[([(FE.__setitem__(n,v[1]+1),Q.append((n,v[1]+1))if n!=S else None,)for n in ns(v[0])if M[n[0]][n[1]]!="#"and n not in FE])for v in iter(lambda:Q.popleft()if Q else None,None)],cheat:=lambda t1,ps:(Q:=__import__("collections").deque([(t1,0)]),V:={t1},T:={},[([(V.add(n),T.__setitem__(n,v[1]+1)if M[n[0]][n[1]]!="#"else None,Q.append((n,v[1]+1))if v[1]+1<ps else None,)for n in ns(v[0])if n not in V])for v in iter(lambda:Q.popleft()if Q else None,None)],T)[-1],save:=lambda ps:[((t1,t2),FS[t1],c,FE[t2],cost:=FS[t1]+c+FE[t2],FS[E]-cost)for t1 in FS for t2,c in cheat(t1,ps).items()if t2 in FE],O:=sum(s[-1]>=(50 if example else 100)for s in save(2)),T:=sum(s[-1]>=(50 if example else 100)for s in save(20)),O,T)[-2:])' < example
+(1, 285)
+```
+
+Gaah, wrestled with this one way too long. Unminified:
+
+```python
+print((
+M := open(0).read().splitlines(),
+print(M),
+example := len(M) < 100,
+
+S := next((i,j) for i,m in enumerate(M) for j,x in enumerate(m) if x=="S"),
+E := next((i,j) for i,m in enumerate(M) for j,x in enumerate(m) if x=="E"),
+print(S, E),
+
+# Strategy, cost of cheat is sum of:
+# Shortest path from S to track t1 without cheat
+# Shortest path from track t1 to track t2 (allowed to move up to ps with cheat active)
+# Shortest path from t2 to E without cheat
+
+# Neighbors
+ns := lambda v: [(v[0]+d[0],v[1]+d[1]) for d in [(-1,0),(0,1),(1,0),(0,-1)] if 0<=v[0]+d[0]<len(M) and 0<=v[1]+d[1]<len(M[0])],
+
+# BFS from S to find E (no cheat) and all t1
+Q := __import__("collections").deque([(S,0)]),
+FS := {S:0},
+[(
+[(
+  FS.__setitem__(n,v[1]+1),
+  Q.append((n,v[1]+1)) if n!=E else None,
+  ) for n in ns(v[0]) if M[n[0]][n[1]]!="#" and n not in FS]
+) for v in iter(lambda: Q.popleft() if Q else None, None)],
+
+print(FS[E]),
+
+# BFS from E to all reachable track cells t2
+Q := __import__("collections").deque([(E,0)]),
+FE := {E:0},
+[(
+[(
+  FE.__setitem__(n,v[1]+1),
+  Q.append((n,v[1]+1)) if n!=S else None,
+  ) for n in ns(v[0]) if M[n[0]][n[1]]!="#" and n not in FE]
+) for v in iter(lambda: Q.popleft() if Q else None, None)],
+
+print(FE[S]),
+
+# For each t1, find all t2 with cheat active
+cheat := lambda t1, ps: (
+Q := __import__("collections").deque([(t1,0)]),
+V := {t1},
+T := {},
+[(
+[(
+  V.add(n),
+  T.__setitem__(n,v[1]+1) if M[n[0]][n[1]]!="#" else None,
+  Q.append((n,v[1]+1)) if v[1]+1<ps else None,
+  ) for n in ns(v[0]) if n not in V]
+) for v in iter(lambda: Q.popleft() if Q else None, None)],
+T)[-1],
+
+# Calculated ps saved per cheat
+save := lambda ps: [((t1,t2), FS[t1], c, FE[t2], cost:=FS[t1]+c+FE[t2], FS[E]-cost) for t1 in FS for t2,c in cheat(t1,ps).items() if t2 in FE],
+
+# Part One
+O := sum(s[-1]>=(50 if example else 100) for s in save(2)),
+
+# Part Two
+T := sum(s[-1]>=(50 if example else 100) for s in save(20)),
+
+O, T)[-2:])
+```
