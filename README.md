@@ -998,3 +998,112 @@ T := sum(s[-1]>=(50 if example else 100) for s in save(20)),
 
 O, T)[-2:])
 ```
+
+## 21
+
+```bash
+$ python3 -c 'print((X:=open(0).read().splitlines(),ds:={(-1,0):"^",(0,1):">",(1,0):"v",(0,-1):"<"},ns:=lambda G,v:[(v[0]+d[0],v[1]+d[1])for d in ds.keys()if 0<=v[0]+d[0]<len(G)and 0<=v[1]+d[1]<len(G[0])],bfs:=lambda G,s:(Q:=__import__("collections").deque([[s]]),res:=__import__("collections").defaultdict(list),[[Q.append(p+[n])or(res[n].append(p+[n])if n not in res or len(p)+1<=len(res[n][0])else None)for n in ns(G,p[-1])if n not in p and G[n[0]][n[1]]!="P"and(sum(abs(bi-ai)and abs(cj-bj)or abs(bj-aj)and abs(ci-bi)for(ai,aj),(bi,bj),(ci,cj)in zip((p+[n]),(p+[n])[1:],(p+[n])[2:]))<2 if len(p)>2 else True)]for p in iter(lambda:Q.popleft()if Q else None,None)],pruned:={},[(left:=k[1]-s[1]<0,v:=bool(p[1][0]-p[0][0]),h:=bool(p[1][1]-p[0][1]),keep:=left and h or not left and v,pruned.__setitem__(k,[p])if keep else None,)for k,P in res.items()for p in P if len(P)>1],res:={**res,**pruned},res)[-1],N:="789\n456\n123\nP0A".splitlines(),Nc:={x:(i,j)for i,r in enumerate(N)for j,x in enumerate(r)if x!="P"},Np:={(i,j):bfs(N,(i,j))for i,r in enumerate(N)for j,x in enumerate(r)if x!="P"},D:="P^A\n<v>".splitlines(),Dc:={x:(i,j)for i,r in enumerate(D)for j,x in enumerate(r)if x!="P"},Dp:={(i,j):bfs(D,(i,j))for i,r in enumerate(D)for j,x in enumerate(r)if x!="P"},solve:=lambda Gc,Gp,s:(seq:=[],T:=__import__("collections").defaultdict(int),[(p:=Gp[Gc[f]][Gc[t]][0]if f!=t else None,ext:=([ds[(bi-ai,bj-aj)]for(ai,aj),(bi,bj)in zip(p,p[1:])]if f!=t else[])+["A"],[T.__setitem__(pair,T[pair]+1)for pair in zip(["A"]+ext,ext)],seq:=seq+ext,)for f,t in zip(s,s[1:])],T)[-1],solveT:=lambda Tp:(T:=__import__("collections").defaultdict(int),[(p:=Dp[Dc[f]][Dc[t]][0]if f!=t else None,ext:=([ds[(bi-ai,bj-aj)]for(ai,aj),(bi,bj)in zip(p,p[1:])]if f!=t else[])+["A"],[T.__setitem__(pair,T[pair]+n)for pair in zip(["A"]+ext,ext)],)for(f,t),n in Tp.items()],T)[-1],do:=lambda s,n:(s:=["A",*s],T:=solve(Nc,Np,s),[T:=solveT(T)for _ in range(n)],sum(T.values()))[-1],O:=sum((c:=do(x,2)*int(x[:-1]),c)[-1]for x in X),T:=sum((c:=do(x,25)*int(x[:-1]),c)[-1]for x in X),O,T)[-2:])' < example
+(126384, 154115708116294)
+```
+
+Part Two was just evil... 😅 Unminified:
+
+```python
+print((
+X := open(0).read().splitlines(),
+print(X),
+
+# BFS to find all paths between keys in keypads
+ds := {(-1,0):"^", (0,1):">", (1,0):"v", (0,-1):"<"},
+ns := lambda G, v: [(v[0]+d[0],v[1]+d[1]) for d in ds.keys() if 0<=v[0]+d[0]<len(G) and 0<=v[1]+d[1]<len(G[0])],
+bfs := lambda G, s: (
+Q := __import__("collections").deque([[s]]),
+res := __import__("collections").defaultdict(list),
+[[Q.append(p+[n]) or (res[n].append(p+[n]) if n not in res or len(p)+1<=len(res[n][0]) else None) for n in ns(G,p[-1]) if n not in p and G[n[0]][n[1]]!="P"
+# Allow only a single 90 degree turn (going zigzag explodes the sequences), intuition: it's good to go straight by spamming A when possible
+and (sum(abs(bi-ai) and abs(cj-bj) or abs(bj-aj) and abs(ci-bi) for (ai,aj),(bi,bj),(ci,cj) in zip((p+[n]),(p+[n])[1:],(p+[n])[2:]))<2 if len(p)>2 else True)
+]
+for p in iter(lambda: Q.popleft() if Q else None, None)],
+
+# I struggled with Part Two, this post helped: https://www.reddit.com/r/adventofcode/comments/1hjgyps/2024_day_21_part_2_i_got_greedyish/
+# If we're moving left do horizontal+vertical, if we're moving right do vertical+horizontal
+pruned := {},
+[(
+left:=k[1]-s[1]<0,
+v:=bool(p[1][0]-p[0][0]),
+h:=bool(p[1][1]-p[0][1]),
+keep:=left and h or not left and v,
+pruned.__setitem__(k,[p]) if keep else None,
+) for k,P in res.items() for p in P if len(P)>1],
+res := {**res,**pruned},
+res)[-1],
+
+# Numeric keypad
+N := """
+789
+456
+123
+P0A
+""".strip().splitlines(),
+print(N),
+Nc := {x:(i,j) for i,r in enumerate(N) for j,x in enumerate(r) if x!="P"},
+Np := {(i,j):bfs(N,(i,j)) for i,r in enumerate(N) for j,x in enumerate(r) if x!="P"},
+
+# Directional keypad
+D := """
+P^A
+<v>
+""".strip().splitlines(),
+print(D),
+Dc := {x:(i,j) for i,r in enumerate(D) for j,x in enumerate(r) if x!="P"},
+Dp := {(i,j):bfs(D,(i,j)) for i,r in enumerate(D) for j,x in enumerate(r) if x!="P"},
+
+# Which buttons should be pressed on dpad to get s?
+solve := lambda Gc, Gp, s: (
+seq := [],
+T := __import__("collections").defaultdict(int),
+[(
+p:=Gp[Gc[f]][Gc[t]][0] if f!=t else None,
+ext:=([ds[(bi-ai,bj-aj)] for (ai,aj),(bi,bj) in zip(p,p[1:])] if f!=t else [])+["A"],
+[T.__setitem__(pair,T[pair]+1)for pair in zip(["A"]+ext, ext)],
+seq:=seq+ext,
+) for f,t in zip(s,s[1:])],
+T)[-1],
+
+# Only count transition types so we don't run out of memory
+solveT := lambda Tp: (
+T := __import__("collections").defaultdict(int),
+[(
+p:=Dp[Dc[f]][Dc[t]][0] if f!=t else None,
+ext:=([ds[(bi-ai,bj-aj)] for (ai,aj),(bi,bj) in zip(p,p[1:])] if f!=t else [])+["A"],
+[T.__setitem__(pair,T[pair]+n)for pair in zip(["A"]+ext, ext)],
+) for (f,t),n in Tp.items()],
+T)[-1],
+
+# Solve for each robot, so 123A is transformed into dpad seq s1, then s is transformed to s2 and so on
+do := lambda s, n: (
+s := ["A", *s],
+T := solve(Nc, Np, s),
+[T := solveT(T) for _ in range(n)],
+sum(T.values()))[-1],
+
+# Part One
+print("Part One..."),
+O := sum((
+print("Solving:",x),
+c:=do(x,2)*int(x[:-1]),
+print("Complexity:",c),
+c)[-1] for x in X),
+print("Answer:",O,"\n"),
+
+# Part Two
+print("Part Two..."),
+T := sum((
+print("Solving:",x),
+c:=do(x,25)*int(x[:-1]),
+print("Complexity:",c),
+c)[-1] for x in X),
+print("Answer:",T,"\n"),
+
+O, T)[-2:])
+```
