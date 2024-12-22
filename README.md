@@ -1107,3 +1107,50 @@ print("Answer:",T,"\n"),
 
 O, T)[-2:])
 ```
+
+## 22
+
+```bash
+$ python3 -c 'print((X:=[int(x)for x in open(0).read().splitlines()],f:=lambda x:(x:=((x*64)^x)%16777216,x:=((x//32)^x)%16777216,x:=((x*2048)^x)%16777216,x)[-1],do:=lambda x,n:[x:=f(x)for _ in range(n)],S:=[[x]+do(x,2000)for x in X],O:=sum(s[-1]for s in S),M:=[[x%10 for x in s]for s in S],g:=lambda m:(D:=[b-a for a,b in zip(m,m[1:])],P:=__import__("collections").defaultdict(int),[P.__setitem__((a,b,c,d),m[i+4])if(a,b,c,d)not in P else None for i,(a,b,c,d)in enumerate(zip(D,D[1:],D[2:],D[3:]))],P)[-1],Ps:=[g(m)for m in M],seqs:=list(set().union(*[P.keys()for P in Ps])),T:=max(sum(P[seq]for P in Ps)for seq in seqs),O,T)[-2:])' < example
+(37990510, 23)
+```
+
+Unminified:
+
+```python
+print((
+X := [int(x) for x in open(0).read().splitlines()],
+print(X),
+
+f := lambda x: (
+x := ((x*64)^x)%16777216,
+x := ((x//32)^x)%16777216,
+x := ((x*2048)^x)%16777216,
+x)[-1],
+
+do := lambda x, n: [x := f(x) for _ in range(n)],
+
+S := [[x]+do(x, 2000) for x in X],
+
+# Part One, sum 2000th secret
+O := sum(s[-1] for s in S),
+
+M := [[x%10 for x in s] for s in S],
+
+g := lambda m: (
+D := [b-a for a,b in zip(m,m[1:])],
+P := __import__("collections").defaultdict(int),
+[P.__setitem__((a,b,c,d),m[i+4]) if (a,b,c,d) not in P else None for i,(a,b,c,d) in enumerate(zip(D,D[1:],D[2:],D[3:]))],
+P)[-1],
+
+# Get all sequences and their price for each buyer
+Ps := [g(m) for m in M],
+
+# Get all unique sequences
+seqs := list(set().union(*[P.keys() for P in Ps])),
+
+# Part Two, get the sequence with the highest sum
+T := max(sum(P[seq] for P in Ps) for seq in seqs),
+
+O, T)[-2:])
+```
