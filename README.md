@@ -1154,3 +1154,52 @@ T := max(sum(P[seq] for P in Ps) for seq in seqs),
 
 O, T)[-2:])
 ```
+
+## 23
+
+```bash
+$ python3 -c 'print((X:=[x.split("-")for x in open(0).read().splitlines()],G:=__import__("collections").defaultdict(list),[G[a].append(b)or G[b].append(a)for a,b in X],G:={k:set(v)for k,v in G.items()},R:=[[set([k,a,b])for a,b in __import__("itertools").combinations(v,2)if b in G[a]]for k,v in G.items()if k[0]=="t"],R:={frozenset(s)for r in R for s in r},O:=len(R),M:=set(),f:=lambda R,P,X:((M.clear()or M.update(R)if len(R)>len(M)else None)if not P and not X else(p:=max((len(G[k]),k)for k in P|X)[1],[(f(R|{n},P&G[n],X&G[n]),P.remove(n),X.add(n),)for n in P-G[p]],),),f(set(),set(G.keys()),set()),T:=",".join(sorted(M)),O,T)[-2:])' < example
+(7, 'co,de,ka,ta')
+
+Unminified:
+
+```python
+print((
+# Build graph
+X := [x.split("-") for x in open(0).read().splitlines()],
+G := __import__("collections").defaultdict(list),
+[G[a].append(b) or G[b].append(a) for a,b in X],
+G := {k:set(v) for k,v in G.items()},
+print(G),
+
+# For each node starting with t, go through each pair of neighbors
+# If a pair of neighbors are connected, we found a triangle
+R := [[set([k,a,b]) for a,b in __import__("itertools").combinations(v,2) if b in G[a]] for k,v in G.items() if k[0]=="t"],
+R := {frozenset(s) for r in R for s in r},
+print(R),
+
+# Part One
+O := len(R),
+
+# Bron-Kerbosch with pivoting to find the max clique
+M := set(),
+f := lambda R, P, X: (
+(M.clear() or M.update(R) if len(R)>len(M) else None)
+if not P and not X
+else (
+# Select pivot with highest degree in P|X
+p := max((len(G[k]),k) for k in P|X)[1],
+[(
+f(R|{n}, P&G[n], X&G[n]),
+P.remove(n),
+X.add(n),
+) for n in P-G[p]],
+),
+),
+f(set(), set(G.keys()), set()),
+
+# Part Two
+T := ",".join(sorted(M)),
+
+O, T)[-2:])
+```
