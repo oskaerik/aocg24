@@ -1160,6 +1160,7 @@ O, T)[-2:])
 ```bash
 $ python3 -c 'print((X:=[x.split("-")for x in open(0).read().splitlines()],G:=__import__("collections").defaultdict(list),[G[a].append(b)or G[b].append(a)for a,b in X],G:={k:set(v)for k,v in G.items()},R:=[[set([k,a,b])for a,b in __import__("itertools").combinations(v,2)if b in G[a]]for k,v in G.items()if k[0]=="t"],R:={frozenset(s)for r in R for s in r},O:=len(R),M:=set(),f:=lambda R,P,X:((M.clear()or M.update(R)if len(R)>len(M)else None)if not P and not X else(p:=max((len(G[k]),k)for k in P|X)[1],[(f(R|{n},P&G[n],X&G[n]),P.remove(n),X.add(n),)for n in P-G[p]],),),f(set(),set(G.keys()),set()),T:=",".join(sorted(M)),O,T)[-2:])' < example
 (7, 'co,de,ka,ta')
+```
 
 Unminified:
 
