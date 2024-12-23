@@ -401,10 +401,10 @@ V:=set(),
 list(iter(F.partial(b,M,Q,V), False)),
 V)[-1],
 
-# Collect cliques
+# Collect shapes
 # For letter:
 # While U:
-# pop s, get clique V = BFS(s), U -= V
+# pop s, get shapes V = BFS(s), U -= V
 c:=lambda U, C: (
 s:=U.pop(),
 V:=B(M, s),
@@ -412,7 +412,7 @@ C.append(V),
 U.difference_update(V),
 bool(U))[-1],
 R:=[(U:=set(X), C:=[], list(iter(F.partial(c,U,C),False)), C)[-1] for X in L.values()],
-# Flatten to list of cliques
+# Flatten to list of shapes
 R:=[C for r in R for C in r],
 print(f"{R=}"),
 
@@ -423,8 +423,8 @@ print(f"{P=}"),
 # Part One = area * perimeter
 O:=sum(len(C)*p for C,p in zip(R,P)),
 
-# All right, Part Two should be something like counting clique shape corners instead
-# For each clique/shape:
+# All right, Part Two should be something like counting shape corners instead
+# For each shape:
 # Each cell has 4 candidate corners
 # If it's not shared by any other cells, it's a regular "outwards corner"
 # If 3 cells share a corner, it's an "inwards corner"
