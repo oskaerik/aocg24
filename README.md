@@ -541,8 +541,8 @@ O, T)[-2:])
 ## 14
 
 ```bash
-$ python3 -c 'print((X:=open(0).read().splitlines(),X:=[(a:=x[2:].split(","))and(b:=a[1].split("v="))and(int(a[0]),int(b[0]),int(b[1]),int(a[2]))for x in X],S:=(11,7)if len(X)==12 else(101,103),R:=list(X),P:=lambda R:(M:=[[0 for _ in range(S[0])]for _ in range(S[1])],[M[q].__setitem__(p,M[q][p]+1)for p,q,v,w in R],[[print(c if c else".",end="")for c in r]and print()for r in M]and print()),P:=lambda R:None,N:=lambda R:[((p+v)%S[0],(q+w)%S[1],v,w)for p,q,v,w in R],P(R),[R:=N(R)for _ in range(100)],P(R),F:=(sum(1 for p,q,_,_ in R if p<S[0]//2 and q<S[1]//2),sum(1 for p,q,_,_ in R if p>S[0]//2 and q<S[1]//2),sum(1 for p,q,_,_ in R if p<S[0]//2 and q>S[1]//2),sum(1 for p,q,_,_ in R if p>S[0]//2 and q>S[1]//2),),O:=F[0]*F[1]*F[2]*F[3],R:=list(X),D:=False,T:=-1,[(T:=T+1,M:=[[0 for _ in range(S[0])]for _ in range(S[1])],[M[q].__setitem__(p,M[q][p]+1)for p,q,v,w in R],s:="".join(str(x)for m in M for x in m),(D:=True)if"1111111111"in s or S==(11,7)else None,R:=N(R),)for _ in iter(lambda:D,True)],O,T)[-2:])' < example
-(12, 0)
+$ python3 -c 'print((X:=open(0).read().splitlines(),X:=[(a:=x[2:].split(","))and(b:=a[1].split("v="))and(int(a[0]),int(b[0]),int(b[1]),int(a[2]))for x in X],S:=(11,7)if len(X)==12 else(101,103),R:=list(X),P:=lambda R:(M:=[[0 for _ in range(S[0])]for _ in range(S[1])],[M[q].__setitem__(p,M[q][p]+1)for p,q,v,w in R],[[print(c if c else".",end="")for c in r]and print()for r in M]and print()),P:=lambda R:None,N:=lambda R:[((p+v)%S[0],(q+w)%S[1],v,w)for p,q,v,w in R],P(R),[R:=N(R)for _ in range(100)],P(R),F:=(sum(1 for p,q,_,_ in R if p<S[0]//2 and q<S[1]//2),sum(1 for p,q,_,_ in R if p>S[0]//2 and q<S[1]//2),sum(1 for p,q,_,_ in R if p<S[0]//2 and q>S[1]//2),sum(1 for p,q,_,_ in R if p>S[0]//2 and q>S[1]//2),),O:=F[0]*F[1]*F[2]*F[3],R:=list(X),D:=False,T:=-1,[(T:=T+1,M:=[[0 for _ in range(S[0])]for _ in range(S[1])],[M[q].__setitem__(p,M[q][p]+1)for p,q,v,w in R],s:="".join(str(x)for m in M for x in m),(D:=True)if"1111111111"in s or S==(11,7)else None,R:=N(R),)for _ in iter(lambda:D,True)],O,T)[-2:])' < input
+(233709840, 6620)
 ```
 
 Part Two only makes sense with real input... Unminified:
