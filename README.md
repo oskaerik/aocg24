@@ -1324,7 +1324,7 @@ O, T)[-2:])
 
 ```bash
 $ python3 -c 'print((X:=[x.splitlines()for x in open(0).read().split("\n\n")],L:=[["".join(c)for c in zip(*x)]for x in X if x[0]=="#####"],K:=[["".join(c)for c in zip(*x)]for x in X if x[0]=="....."],overlap:=lambda l,k:any([len(a.replace(".",""))+len(b.replace(".",""))>7 for a,b in zip(l,k)]),O:=sum([not overlap(l,k)for l in L for k in K]),O,"🎄")[-2:])' < example
-(3327, '🎄')
+(3, '🎄')
 ```
 
 Unminified:
