@@ -1204,3 +1204,118 @@ T := ",".join(sorted(M)),
 
 O, T)[-2:])
 ```
+
+## 24
+
+```bash
+$ python3 -c 'print((X:=open(0).read().splitlines(),S:=[x.split(": ")for x in X[:X.index("")]],S:={k:bool(int(v))for k,v in S},G:=X[X.index("")+1:],G:=[g.split(" -> ")for g in G],G:=[(*g[0].split(),g[1])for g in G],G:={(min(g[0],g[2]),g[1],max(g[0],g[2])):g[3]for g in G},op:={"AND":lambda a,b:a and b,"OR":lambda a,b:a or b,"XOR":lambda a,b:a ^ b,},out:=dict(S),Q:=__import__("collections").deque(G.items()),[out.__setitem__(o,op[g[1]](out[g[0]],out[g[2]]))if g[0]in out and g[2]in out else Q.append((g,o))for g,o in iter(lambda:Q.popleft()if Q else None,None)],O:=sum(b<<int(o[1:])for o,b in out.items()if o[0]=="z"),fnd:=lambda a,op,b:next((o for g,o in G.items()if g==(a,op,b)or g==(b,op,a)),None),fnd1:=lambda a,op:next((o for g,o in G.items()if g[1]==op and(g[0]==a or g[2]==a)),None),fa:=lambda i:fnd(f"x{i:02}","XOR",f"y{i:02}"),fb:=lambda c,d:fnd(c,"OR",d),fc:=lambda i:fnd(f"x{i-1:02}","AND",f"y{i-1:02}"),fd:=lambda pa,pb:fnd(pa,"AND",pb),fz:=lambda a,b:fnd(a,"XOR",b),pa:=fa(1),pb:=fc(1),Gi:={v:k for k,v in G.items()},swapped:={"tqr","hth"},G.__setitem__(Gi["tqr"],"hth"),G.__setitem__(Gi["hth"],"tqr"),Gi:={v:k for k,v in G.items()},I:=list(reversed(range(2,45))),[(a:=fa(i),c:=fc(i),d:=fd(pa,pb),b:=fb(c,d),z:=fz(a,b),(G.__setitem__(Gi[f"z{i:02}"],z),G.__setitem__(Gi[z],f"z{i:02}"),swapped.add(f"z{i:02}"),swapped.add(z),I.append(i),)if z is not None and z[0]!="z"else(pa:=a,pb:=b,),)for i in iter(lambda:I.pop()if I else None,None)],T:=",".join(sorted(swapped)),O,T)[-2:])' < input
+(52956035802096, 'hnv,hth,kfm,tqr,vmv,z07,z20,z28')
+```
+
+Ok Part Two was tough. One pair of outputs was swapped by hand. God jul! Unminified:
+
+```python
+print((
+# Read input from stdin
+X := open(0).read().splitlines(),
+print(X),
+
+# Start {"x00": True, ...}
+S := [x.split(": ") for x in X[:X.index("")]],
+S := {k:bool(int(v)) for k,v in S},
+print(S),
+
+# Gates [("x00", "AND", "y00", "z00"), ...]
+G := X[X.index("")+1:],
+G := [g.split(" -> ") for g in G],
+G := [(*g[0].split(),g[1]) for g in G],
+G := {(min(g[0],g[2]),g[1],max(g[0],g[2])):g[3] for g in G},
+
+op := {
+"AND": lambda a, b: a and b,
+"OR":  lambda a, b: a or b,
+"XOR": lambda a, b: a ^ b,
+},
+
+# Update outputs until all gates processed
+out := dict(S),
+Q := __import__("collections").deque(G.items()),
+[out.__setitem__(o, op[g[1]](out[g[0]],out[g[2]])) if g[0] in out and g[2] in out else Q.append((g,o))
+for g,o in iter(lambda: Q.popleft() if Q else None, None)],
+
+# Part One
+O := sum(b<<int(o[1:]) for o,b in out.items() if o[0]=="z"),
+
+# Inspection of the graph reveals that the structure we're aiming for repeats between z02..z44 (p = previous):
+
+# z00 = x00 XOR y00
+
+# z01 =   a XOR   b
+#   a = x01 XOR y01
+#   b = x00 AND y00
+
+# z02 =   a XOR   b
+#   a = x02 XOR y02
+#   b =   c  OR   d
+#   c = x01 AND y01
+#   d = p a AND p b
+
+# z03 =   a XOR   b
+#   a = x03 XOR y03
+#   b =   c  OR   d
+#   c = x02 AND y02
+#   d = p a AND p b
+
+# ...
+
+# z45 =   c  OR   d
+#   c = x44 AND y44
+#   d = p a AND p b
+fnd := lambda a, op, b: next((o for g,o in G.items() if g==(a,op,b) or g==(b,op,a)), None),
+
+fnd1 := lambda a, op: next((o for g,o in G.items() if g[1]==op and (g[0]==a or g[2]==a)), None),
+
+fa := lambda i: fnd(f"x{i:02}","XOR",f"y{i:02}"),
+
+fb := lambda c, d: fnd(c,"OR",d),
+
+fc := lambda i: fnd(f"x{i-1:02}","AND",f"y{i-1:02}"),
+
+fd := lambda pa, pb: fnd(pa,"AND",pb),
+
+fz := lambda a, b: fnd(a,"XOR",b),
+
+pa := fa(1),
+pb := fc(1),
+
+# Manually found this swap
+Gi := {v:k for k,v in G.items()},
+swapped := {"tqr","hth"},
+G.__setitem__(Gi["tqr"],"hth"),
+G.__setitem__(Gi["hth"],"tqr"),
+Gi := {v:k for k,v in G.items()},
+
+I := list(reversed(range(2,45))),
+[(
+a := fa(i),
+c := fc(i),
+d := fd(pa,pb),
+b := fb(c,d),
+z := fz(a,b),
+(
+# Swap and retry
+G.__setitem__(Gi[f"z{i:02}"],z),
+G.__setitem__(Gi[z],f"z{i:02}"),
+swapped.add(f"z{i:02}"),
+swapped.add(z),
+I.append(i),
+) if z is not None and z[0]!="z" else (
+pa := a,
+pb := b,
+),
+) for i in iter(lambda: I.pop() if I else None, None)],
+
+T := ",".join(sorted(swapped)),
+
+O, T)[-2:])
+```
