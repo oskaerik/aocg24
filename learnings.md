@@ -1,6 +1,6 @@
 # Solving AoC with one Python expression
 
-This year, I solved all puzzles using a single Python expression: https://github.com/oskaerik/aocg24
+This year, I solved all puzzles using a single Python expression: https://github.com/oskaerik/aocg24 (Unminified versions are included from day 8 and forward)
 
 I started doing day 1 in Go, but thought "this is a oneliner in Python!", and here we are...
 
@@ -60,9 +60,7 @@ I did BFS more times than I can count this year. And while BFSing you typically 
 
 Fret not, yet again we can be clever. `iter(callable, sentinel)` to the rescue!
 
-You pass it a callable and it will keep calling the callable until it sees the sentinel value, then stop.
-
-So this iterator:
+You pass it a callable and it will keep calling the callable until it sees the sentinel value, then stop:
 
 ```python
 iter(lambda x=[1, 2, 3]: x.pop() if x else None, None)
@@ -121,4 +119,8 @@ bfs := lambda start: (
 res)[-1])
 ```
 
-So, yeah. That's basically how to solve AoC in one expression.
+So, yeah. That's basically how to solve AoC in one expression. Oh yeah, and the input can be read from stdin with:
+
+```python
+open(0).read().splitlines()
+```
