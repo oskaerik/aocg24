@@ -2,7 +2,7 @@
 
 This year, I solved all puzzles using a single Python expression: https://github.com/oskaerik/aocg24 (Unminified versions are included from day 8 and forward)
 
-I started doing day 1 in Go, but thought "this is a oneliner in Python!", and here we are...
+I started doing day 1 in Go, but thought "this is a one-liner in Python!", and here we are...
 
 ## What's an expression?
 
@@ -28,7 +28,7 @@ print((
 p1, p2)[-2:])
 ```
 
-This will print a tuple `(p1, p2)`. Now we just need to replace the `<do stuff>` with some boilerplate so `p1` and `p2` contains the answers to the puzzle.
+This will print a tuple `(p1, p2)`. Now we just need to replace the `<do stuff>` with some boilerplate so `p1` and `p2` contain the answers to the puzzle.
 
 Combine this with some inline `... if ... else ...` and you have your control flow figured out.
 
